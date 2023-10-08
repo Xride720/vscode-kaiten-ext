@@ -1,13 +1,15 @@
 {
   "name": "kaiten-ext",
   "displayName": "Kaiten",
-  "description": "link to kaiten",
+  "description": "Kaiten in VSCode",
   "version": "0.0.1",
   "repository": {
+		"type": "git",
     "url": "https://github.com/Xride720/vscode-kaiten-ext"
   },
   "license": "MIT",
   "publisher": "XRide720",
+  "icon": "assets/logo_stroke.png",
   "engines": {
     "vscode": "^1.82.0"
   },
