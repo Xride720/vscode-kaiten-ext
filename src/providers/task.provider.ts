@@ -54,7 +54,6 @@ export class KaitenTaskViewProvider implements vscode.WebviewViewProvider {
 		this.taskData = data;
 		if (this._view) {
 			const taskInfoHtml = this._generateTaskInfoHtml(data);
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			this._view.webview.postMessage({ type: 'updateTaskData', data: taskInfoHtml });
 		}
 	}

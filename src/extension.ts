@@ -43,7 +43,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			await store.updateTimeLogs();
 		}),
 	);
-	// context.subscriptions.push(disposable_1, disposable_2);
 
 }
 

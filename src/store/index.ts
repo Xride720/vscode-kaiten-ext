@@ -48,22 +48,23 @@ export class KaitenTaskStore {
     
     if (!this.gitExt) return;
 
-    if (this.gitExt.state === 'initialized' && this.gitExt.repositories[0]) {
-      const repo = this.gitExt.repositories[0];
-      repo.state.onDidChange(() => {
-        if (repo.state.HEAD?.name) {
-          this.taskUrl = generateKaitenLink($this.baseUrl, repo.state.HEAD.name) || '';
+    const initBranch = (_repo: Repository) => {
+      const callback = () => {
+        if (_repo.state.HEAD?.name) {
+          this.taskUrl = generateKaitenLink($this.baseUrl, _repo.state.HEAD.name) || '';
           this.taskId = this.taskUrl.split('/').slice(-1)[0];
         }
-      });
+      };
+      callback();
+      return callback;
+    };
+
+    if (this.gitExt.state === 'initialized' && this.gitExt.repositories[0]) {
+      const repo = this.gitExt.repositories[0];
+      repo.state.onDidChange(initBranch(repo));
     } else {
       this.gitExt.onDidOpenRepository((repo: Repository) => {
-        repo.state.onDidChange(() => {
-          if (repo.state.HEAD?.name) {
-            this.taskUrl = generateKaitenLink($this.baseUrl, repo.state.HEAD.name) || '';
-            this.taskId = this.taskUrl.split('/').slice(-1)[0];
-          }
-        });
+        repo.state.onDidChange(initBranch(repo));
       });
     }
   }

@@ -80,7 +80,6 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 	public updateTimeLogsData(data: KaitenTimeLogType[]) {
 		if (this._view) {
 			const timeLogListHtml = this._generateTimeLogListHtml(data);
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			this._view.webview.postMessage({ type: 'updateTimeLogsData', data: timeLogListHtml });
 		}
 	}
@@ -88,7 +87,6 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 	public updateRolesData(data: KaitenRoleType[]) {
 		if (this._view) {
 			const rolesOptionsHtml = this._generateRoleOptionsHtml(data);
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			this._view.webview.postMessage({ type: 'updateRolesData', data: rolesOptionsHtml });
 		}
 	}
@@ -97,14 +95,12 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		const timeLog = this.store.timeLogs.find(item => item.id === Number(logId));
 		if (!timeLog) return;
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			this._view.webview.postMessage({ type: 'setEditedTimeLog', data: timeLog });
 		}
 	}
 
 	public clearForm() {
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
 			this._view.webview.postMessage({ type: 'clearForm' });
 		}
 	}
