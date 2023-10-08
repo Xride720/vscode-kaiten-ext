@@ -45,5 +45,5 @@ export const formatDate = (date: string): string => {
 export const formatTime = (time: number): string => {
   const minutes = time % 60;
   const hours = Math.floor(time / 60);
-  return `${hours ? hours + ' ч. ' : ''} ${minutes ? minutes + ' мин. ' : ''}`;
+  return `${hours ? hours + 'ч. ' : ''} ${minutes ? minutes + 'мин.' : ''}`;
 };

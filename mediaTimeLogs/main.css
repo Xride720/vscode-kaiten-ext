@@ -87,8 +87,10 @@ body {
 	align-items: center;
 	flex-direction: column;
 	gap: 5px;
-	padding-bottom: 5px;
-	border-bottom: 1px solid var(--vscode-actionBar-toggledBackground);
+	border: 1px solid var(--vscode-actionBar-toggledBackground);
+	padding: 5px;
+	background: var(--vscode-merge-commonContentBackground);
+	border-radius: 5px;
 
 }
 
@@ -132,7 +134,7 @@ body {
 #kaiten-time-logs-list .time-log__item .btn {
 	padding: 0;
 	position: absolute;
-	top: calc(50% - 12px);
+	top: calc(50% - 9px);
 	background: transparent;
 	width: 18px;
 	height: 18px;
@@ -157,11 +159,11 @@ body {
 }
 
 #kaiten-time-logs-list .time-log__item .btn.delete-btn {
-	right: -9px;
+	right: -7px;
 }
 
 #kaiten-time-logs-list .time-log__item .btn.edit-btn {
-	left: -9px;
+	left: -7px;
 }
 #kaiten-time-logs-list .time-log__item .btn.edit-btn > i {
 	transform: scale(.85);
@@ -169,17 +171,23 @@ body {
 
 
 @media only screen and (max-width: 350px) {
-	#kaiten-time-logs-list .time-log__item-comment,
-	#kaiten-time-logs-list .time-log__item-full_name {
+	#kaiten-time-logs-list .time-log__item .bottom-block {
 		display: none;
 	}
 	#kaiten-time-logs-list .time-log__item .btn {
-		top: 5px;
+		top: 9px;
 	}
 	#kaiten-time-logs-list .time-log__item .btn.delete-btn {
-		right: -19px;
+		right: -20px;
 	}
 	#kaiten-time-logs-list .time-log__item .btn.edit-btn {
-		left: -19px;
+		left: -20px;
+	}
+}
+
+@media only screen and (max-width: 250px) {
+	#kaiten-time-logs-list .time-log__item .time-log__item-role_name {
+		display: none;
+		flex: 0;
 	}
 }
