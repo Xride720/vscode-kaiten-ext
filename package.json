@@ -3,6 +3,10 @@
   "displayName": "Kaiten",
   "description": "link to kaiten",
   "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/Xride720/vscode-kaiten-ext"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.82.0"
   },
