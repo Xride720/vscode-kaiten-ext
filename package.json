@@ -29,29 +29,21 @@
     },
     "commands": [
       {
-        "command": "test-kaiten.helloWorld",
-        "title": "Hello World"
-      },
-      {
-        "command": "test-kaiten.openKaiten",
-        "title": "Open Kaiten"
-      },
-      {
         "command": "kaiten.task.refresh",
         "category": "Kaiten",
-        "title": "Refresh",
+        "title": "Обновить",
         "icon": "$(settings-sync-view-icon)"
       },
       {
         "command": "kaiten.task.open",
         "category": "Kaiten",
-        "title": "Open Kaiten task",
+        "title": "Открыть задачу в Kaiten",
         "icon": "$(ports-open-browser-icon)"
       },
       {
         "command": "kaiten.time-log.refresh",
         "category": "Kaiten",
-        "title": "Refresh",
+        "title": "Обновить",
         "icon": "$(settings-sync-view-icon)"
       }
     ],
@@ -69,12 +61,12 @@
         {
           "type": "webview",
           "id": "kaiten.task",
-          "name": "Task"
+          "name": "Задача"
         },
         {
           "type": "webview",
           "id": "kaiten.time-log",
-          "name": "Time-logs"
+          "name": "Учёт времени"
         }
       ]
     },

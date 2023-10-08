@@ -58,6 +58,11 @@
           }
         });
         initForm();
+        if (!validateForm()) {
+          disableFormBtns(true);
+        } else {
+          disableFormBtns(false);
+        }
         break;
       }
     }
@@ -111,8 +116,7 @@
     e.stopPropagation();
     const state = getState();
     if (!state || !validateForm()) return;
-    console.log(state);
-    // const payload = Array.from(form.elements).reduce((acc, curr) => { acc[curr.name] = curr.value; return acc; }, {});
+
     vscode.postMessage({
       type: state.editedLogId ? 'updateTimeLog' : 'addTimeLog',
       payload: {
