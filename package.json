@@ -7,6 +7,7 @@
     "url": "https://github.com/Xride720/vscode-kaiten-ext"
   },
   "license": "MIT",
+  "publisher": "XRide720",
   "engines": {
     "vscode": "^1.82.0"
   },
