@@ -1,0 +1,185 @@
+body {
+	background-color: transparent;
+}
+
+.kaiten-hidden {
+	display: none;
+}
+
+#log-form {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+#log-form .cont-comment {
+	width: 100%;
+	margin-bottom: 7px;
+}
+
+#log-form textarea[name="comment"] {
+	resize: vertical;
+	width: 100%;
+	min-height: 70px;
+}
+
+#log-form .top-fields {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin-bottom: 7px;
+}
+#log-form .top-fields > * {
+	flex: 1;
+	min-width: 100px;
+}
+
+#log-form select {
+	width: 100%;
+	text-overflow: ellipsis;
+	padding-right: 10px;
+	border-radius: 6px;
+}
+
+#log-form .select-container:after {
+	content: "";
+	font-family: codicon;
+	font-size: 16px;
+	width: 8px;
+	height: 8px;
+	line-height: 16px;
+	position: absolute;
+	top: -2px;
+	bottom: 0;
+	right: 6px;
+	margin: auto;
+	pointer-events: none;
+	border: 1px solid;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+#log-form .form-buttons {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+#log-form .form-buttons > * {
+	flex: 1;
+	border-radius: 6px;
+}
+#log-form .form-buttons > *:disabled {
+	background: var(--vscode-button-secondaryBackground);
+	cursor: not-allowed;
+}
+
+#kaiten-time-logs-list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	list-style: none;
+	padding: 0;
+}
+
+#kaiten-time-logs-list .time-log__item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid var(--vscode-actionBar-toggledBackground);
+
+}
+
+#kaiten-time-logs-list .time-log__item .top-block,
+#kaiten-time-logs-list .time-log__item .bottom-block {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	width: 100%;
+}
+
+#kaiten-time-logs-list .time-log__item .top-block > *,
+#kaiten-time-logs-list .time-log__item .bottom-block > *  {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding: 5px;
+	background: var(--vscode-actionBar-toggledBackground);
+	border-radius: 6px;
+	text-align: center;
+}
+
+#kaiten-time-logs-list .time-log__item-for_date {
+	flex: 1;
+}
+#kaiten-time-logs-list .time-log__item-role_name {
+	flex: 1;
+}
+#kaiten-time-logs-list .time-log__item-time_spent {
+	flex: 1;
+}
+#kaiten-time-logs-list .time-log__item-full_name {
+	width: calc(50% - 3px);
+}
+#kaiten-time-logs-list .time-log__item-comment {
+	width: calc(50% - 3px);
+	text-align: start;
+}
+
+
+#kaiten-time-logs-list .time-log__item .btn {
+	padding: 0;
+	position: absolute;
+	top: calc(50% - 12px);
+	background: transparent;
+	width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity .3s ease, background-color .3s ease;
+	border-radius: 4px;
+}
+
+#kaiten-time-logs-list .time-log__item:hover .btn {
+	opacity: 1;
+}
+
+#kaiten-time-logs-list .time-log__item:hover .btn.delete-btn:hover {
+	background: var(--vscode-editorError-foreground);
+}
+#kaiten-time-logs-list .time-log__item:hover .btn.edit-btn:hover {
+	background: var(--vscode-button-hoverBackground);
+}
+
+#kaiten-time-logs-list .time-log__item .btn.delete-btn {
+	right: -9px;
+}
+
+#kaiten-time-logs-list .time-log__item .btn.edit-btn {
+	left: -9px;
+}
+#kaiten-time-logs-list .time-log__item .btn.edit-btn > i {
+	transform: scale(.85);
+}
+
+
+@media only screen and (max-width: 350px) {
+	#kaiten-time-logs-list .time-log__item-comment,
+	#kaiten-time-logs-list .time-log__item-full_name {
+		display: none;
+	}
+	#kaiten-time-logs-list .time-log__item .btn {
+		top: 5px;
+	}
+	#kaiten-time-logs-list .time-log__item .btn.delete-btn {
+		right: -19px;
+	}
+	#kaiten-time-logs-list .time-log__item .btn.edit-btn {
+		left: -19px;
+	}
+}

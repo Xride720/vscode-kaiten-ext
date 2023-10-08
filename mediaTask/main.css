@@ -1,0 +1,22 @@
+body {
+	background-color: transparent;
+}
+
+.desc__list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	background: var(--vscode-actionBar-toggledBackground);
+	padding: 10px;
+	border-radius: 8px;
+}
+
+.desc__list-item {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.task-title {
+	font-size: 16px;
+	margin-bottom: 10px;
+}
