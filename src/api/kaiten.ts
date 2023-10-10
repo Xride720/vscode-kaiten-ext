@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { AddTimeLogDataType, AddTimeLogResponseDataType, KaitenCardType, KaitenRoleType, KaitenTimeLogType, UpdateTimeLogDataType, UpdateTimeLogResponseDataType } from "./kaiten.dto";
+import { AddKaitenChecklistType, AddTimeLogDataType, AddTimeLogResponseDataType, KaitenCardType, KaitenChecklistItemType, KaitenChecklistType, KaitenRoleType, KaitenTimeLogType, UpdateChecklistItemType, UpdateKaitenChecklistType, UpdateTimeLogDataType, UpdateTimeLogResponseDataType } from "./kaiten.dto";
 
 const SUCCESS_STATUSES = [200, 201];
 
@@ -67,7 +67,6 @@ export class KaitenApiService {
       };
     }
   }
-
   async addTimeLog(taskId: string, payload: AddTimeLogDataType) {
     try {
       const result = await this.request<AddTimeLogResponseDataType>(
@@ -86,7 +85,6 @@ export class KaitenApiService {
       };
     }
   }
-
   async updateTimeLog(taskId: string, logId: string, payload: UpdateTimeLogDataType) {
     try {
       const result = await this.request<UpdateTimeLogResponseDataType>(
@@ -105,11 +103,118 @@ export class KaitenApiService {
       };
     }
   }
-
   async removeTimeLog(taskId: string, logId: string) {
     try {
       const result = await this.request<{ id: number }>(
         this.baseUrl + '/api/latest/cards/' + taskId + '/time-logs/' + logId,
+        this.kaitenOptions({
+          method: 'DELETE'
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+
+  async addCheckList(taskId: string, payload: AddKaitenChecklistType) {
+    try {
+      const result = await this.request<KaitenChecklistType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists',
+        this.kaitenOptions({
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async updateCheckList(taskId: string, checklistId: number, payload: UpdateKaitenChecklistType) {
+    try {
+      const result = await this.request<KaitenChecklistType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists/' + checklistId,
+        this.kaitenOptions({
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async deleteCheckList(taskId: string, checklistId: number) {
+    try {
+      const result = await this.request<{ id: number }>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists/' + checklistId,
+        this.kaitenOptions({
+          method: 'DELETE'
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+
+  async addCheckListItem(taskId: string, checklistId: number, payload: { text: string }) {
+    try {
+      const result = await this.request<KaitenChecklistItemType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists/' + checklistId + '/items',
+        this.kaitenOptions({
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async updateCheckListItem(taskId: string, checklistId: number, itemId: number, payload: UpdateChecklistItemType) {
+    try {
+      const result = await this.request<KaitenChecklistItemType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists/' + checklistId + '/items/' + itemId,
+        this.kaitenOptions({
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async deleteCheckListItem(taskId: string, checklistId: number, itemId: number) {
+    try {
+      const result = await this.request<{ id: number }>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/checklists/' + checklistId + '/items/' + itemId,
         this.kaitenOptions({
           method: 'DELETE'
         })

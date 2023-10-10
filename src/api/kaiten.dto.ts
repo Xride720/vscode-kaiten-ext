@@ -12,9 +12,11 @@ export type KaitenChecklistItemType = {
   updated: string,
   created: string,
   id: number,
+  checklist_id: number,
   text: string,
   sort_order: number,
   checked: boolean,
+  checked_by?: KaitenUserType,
   checker_id: null | number,
   user_id: number, // ?? string or number
   checked_at: null | string,
@@ -23,14 +25,21 @@ export type KaitenChecklistItemType = {
   due_date: null | string
 };
 
+export type UpdateChecklistItemType = Partial<Pick<KaitenChecklistItemType, 'checked' | 'checklist_id' | 'text' | 'sort_order'>>;
+
 export type KaitenChecklistType = {
   updated: string;
   created: string;
   id: number;
+  sort_order: number;
   name: string;
   policy_id: null | number;
-  items:KaitenChecklistItemType[];
+  items?: KaitenChecklistItemType[];
 };
+
+export type AddKaitenChecklistType = Partial<Pick<KaitenChecklistType, 'name' | 'sort_order'>>;
+
+export type UpdateKaitenChecklistType = Partial<Pick<KaitenChecklistType, 'name' | 'sort_order'>> & { card_id?: number };
 
 
 export type KaitenCardType = {

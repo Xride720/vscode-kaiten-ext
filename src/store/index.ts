@@ -4,22 +4,27 @@ import * as vscode from 'vscode';
 import { API as BuiltInGitApi, GitExtension, Repository } from '../@types/git';
 import { getBuiltInGitApi } from "../helpers/git";
 import { generateKaitenLink } from "../helpers/string";
-import { AddTimeLogDataType, KaitenCardType, KaitenRoleType, KaitenTimeLogType, UpdateTimeLogDataType } from "../api/kaiten.dto";
+import { KaitenCardType, KaitenRoleType, KaitenTimeLogType } from "../api/kaiten.dto";
 import { KaitenTimeLogViewProvider } from "../providers/time-log.provider";
+import { CheckList, CheckListItem, KaitenCheckListProvider } from "../providers/checklist.provider";
+import { TimeLogController } from "../controllers/time-log.controller";
+import { CheckListController } from "../controllers/checklist.controller";
 
-type ViewType = typeof KaitenTaskViewProvider['viewType'] | typeof KaitenTimeLogViewProvider['viewType'];
+type ViewType = typeof KaitenTaskViewProvider['viewType']
+  | typeof KaitenTimeLogViewProvider['viewType']
+  | typeof KaitenCheckListProvider['viewType'];
 
 export class KaitenTaskStore {
 
   private baseUrl: string;
   
-	private kaitenApi: KaitenApiService;
+	public kaitenApi: KaitenApiService;
 
   private _taskUrl: string = '';
 
   private _taskId: string = '';
 
-	private taskData: KaitenCardType | null = null;
+	public taskData: KaitenCardType | null = null;
 
 	private _timeLogs: KaitenTimeLogType[] = [];
 
@@ -28,6 +33,14 @@ export class KaitenTaskStore {
 	public providerKaitenTask: KaitenTaskViewProvider;
 
 	public providerKaitenTimeLog: KaitenTimeLogViewProvider;
+
+  public timeLogController: TimeLogController;
+
+	public providerKaitenCheckList: KaitenCheckListProvider;
+  
+	public viewCheckList: vscode.TreeView<CheckList | CheckListItem>;
+
+	public checkListController: CheckListController;
 
   public gitExt?: BuiltInGitApi;
 
@@ -40,6 +53,11 @@ export class KaitenTaskStore {
     this.kaitenApi = new KaitenApiService(baseUrl, apiKey);
     this.providerKaitenTask = new KaitenTaskViewProvider(context.extensionUri);
     this.providerKaitenTimeLog = new KaitenTimeLogViewProvider(context.extensionUri, this);
+    this.providerKaitenCheckList = new KaitenCheckListProvider(this);
+    this.viewCheckList = vscode.window.createTreeView<CheckList | CheckListItem>(KaitenCheckListProvider.viewType, { treeDataProvider: this.providerKaitenCheckList }); 
+    this.providerKaitenCheckList.view = this.viewCheckList;
+    this.timeLogController = new TimeLogController(context, this);
+    this.checkListController = new CheckListController(context, this);
   }
 
   async init() {
@@ -89,6 +107,7 @@ export class KaitenTaskStore {
 		if (!response.error && response.data) {
 			this.taskData = response.data;
       this.providerKaitenTask.updateTaskData(response.data);
+      this.providerKaitenCheckList.refresh();
 			console.log(this.taskData.title);
 		}
 	}
@@ -145,7 +164,7 @@ export class KaitenTaskStore {
     return this._userRoles;
   }
 
-  private async withProgress<T>(viewId: ViewType, promise: Promise<T>) {
+  public async withProgress<T>(viewId: ViewType, promise: Promise<T>) {
     return await vscode.window.withProgress(
       {
         location: { viewId }
@@ -157,51 +176,4 @@ export class KaitenTaskStore {
     );
   }
 
-  public async addTimeLog(payload: AddTimeLogDataType) {
-    const response = await this.withProgress(
-      KaitenTimeLogViewProvider.viewType,
-      this.kaitenApi.addTimeLog(this.taskId, payload)
-    );
-
-    if (!response.error) {
-      await this.updateTimeLogs();
-    } else {
-      vscode.window.showErrorMessage(response.errorMessage || 'Ошибка создания записи');
-    }
-  }
-
-  public async updateTimeLog(payload: UpdateTimeLogDataType & { id: string }) {
-    const response = await this.withProgress(
-      KaitenTimeLogViewProvider.viewType,
-      this.kaitenApi.updateTimeLog(this.taskId, payload.id, payload)
-    );
-
-    if (!response.error) {
-      await this.updateTimeLogs();
-    } else {
-      vscode.window.showErrorMessage(response.errorMessage || 'Ошибка обновления записи');
-    }
-  }
-
-  public async removeTimeLog(logId: string) {
-    const confirm = await vscode.window.showQuickPick(['Да', 'Нет'], {
-      canPickMany: false,
-      matchOnDescription: false,
-      matchOnDetail: false,
-      ignoreFocusOut: true,
-      placeHolder: 'Выберите нужный вариант',
-      title: 'Удалить запись?'
-    });
-    if (confirm !== 'Да') return;
-    const response = await this.withProgress(
-      KaitenTimeLogViewProvider.viewType,
-      this.kaitenApi.removeTimeLog(this.taskId, logId)
-    );
-    
-    if (!response.error) {
-      await this.updateTimeLogs();
-    } else {
-      vscode.window.showErrorMessage(response.errorMessage || 'Ошибка удаления записи');
-    }
-  }
 }

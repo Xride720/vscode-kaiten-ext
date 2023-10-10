@@ -2,7 +2,7 @@
   "name": "kaiten-ext",
   "displayName": "Kaiten",
   "description": "Kaiten in VSCode",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": {
 		"type": "git",
     "url": "https://github.com/Xride720/vscode-kaiten-ext"
@@ -52,6 +52,43 @@
         "category": "Kaiten",
         "title": "Обновить",
         "icon": "$(settings-sync-view-icon)"
+      },
+
+      {
+        "command": "kaiten.checklist.add",
+        "category": "Kaiten",
+        "title": "Добавить чек-лист",
+        "icon": "$(terminal-new)"
+      },
+      {
+        "command": "kaiten.checklist.edit",
+        "category": "Kaiten",
+        "title": "Редактировать чек-лист",
+        "icon": "$(settings-edit)"
+      },
+      {
+        "command": "kaiten.checklist.delete",
+        "category": "Kaiten",
+        "title": "Удалить чек-лист",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "kaiten.checklist.add-item",
+        "category": "Kaiten",
+        "title": "Добавить пункт чек-листа",
+        "icon": "$(terminal-new)"
+      },
+      {
+        "command": "kaiten.checklist.edit-item",
+        "category": "Kaiten",
+        "title": "Редактировать пункт чек-листа",
+        "icon": "$(settings-edit)"
+      },
+      {
+        "command": "kaiten.checklist.delete-item",
+        "category": "Kaiten",
+        "title": "Удалить пункт чек-листа",
+        "icon": "$(panel-close)"
       }
     ],
     "viewsContainers": {
@@ -74,6 +111,10 @@
           "type": "webview",
           "id": "kaiten.time-log",
           "name": "Учёт времени"
+        },
+        {
+          "id": "kaiten.checklist",
+          "name": "Чек-листы"
         }
       ]
     },
@@ -87,12 +128,44 @@
         {
           "command": "kaiten.task.refresh",
           "group": "navigation",
-          "when": "view == kaiten.task"
+          "when": "view == kaiten.task || view == kaiten.checklist"
         },
         {
           "command": "kaiten.time-log.refresh",
           "group": "navigation",
           "when": "view == kaiten.time-log"
+        },
+        {
+          "command": "kaiten.checklist.add",
+          "group": "navigation",
+          "when": "view == kaiten.checklist"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "kaiten.checklist.edit",
+          "group": "inline@2",
+          "when": "viewItem == kaiten.checklist.checklist"
+        },
+        {
+          "command": "kaiten.checklist.delete",
+          "group": "inline@3",
+          "when": "viewItem == kaiten.checklist.checklist"
+        },
+        {
+          "command": "kaiten.checklist.add-item",
+          "group": "inline@1",
+          "when": "viewItem == kaiten.checklist.checklist"
+        },
+        {
+          "command": "kaiten.checklist.edit-item",
+          "group": "inline@2",
+          "when": "viewItem == kaiten.checklist.checklistItem"
+        },
+        {
+          "command": "kaiten.checklist.delete-item",
+          "group": "inline@3",
+          "when": "viewItem == kaiten.checklist.checklistItem"
         }
       ]
     }
@@ -106,7 +179,9 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "yarn run compile-tests && yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "vsce:publish": "vsce publish",
+    "vsce:package": "vsce package"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.2",

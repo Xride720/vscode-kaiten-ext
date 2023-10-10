@@ -49,17 +49,17 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'addTimeLog':
 					{
-						$this.store.addTimeLog(data.payload);
+						$this.store.timeLogController.addTimeLog(data.payload);
 						break;
 					}
 				case 'updateTimeLog':
 					{
-						$this.store.updateTimeLog(data.payload);
+						$this.store.timeLogController.updateTimeLog(data.payload);
 						break;
 					}
 				case 'removeTimeLog':
 					{
-						$this.store.removeTimeLog(data.payload);
+						$this.store.timeLogController.removeTimeLog(data.payload);
 						break;
 					}
 				case 'editTimeLog':

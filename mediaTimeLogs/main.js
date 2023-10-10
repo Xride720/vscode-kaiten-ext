@@ -7,7 +7,6 @@
   initForm();
 
   document.getElementById("log-form")?.addEventListener("input", (e) => {
-    console.log(e.target.name, e.target.value);
     if (e.target.type === 'select-one') {
       e.target.title = `${e.target.selectedOptions[0]?.label ? e.target.selectedOptions[0].label + ' - ' : ''}${e.target.value}`
     } else {

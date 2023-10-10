@@ -28,8 +28,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(KaitenTaskViewProvider.viewType, store.providerKaitenTask),
 		vscode.window.registerWebviewViewProvider(KaitenTimeLogViewProvider.viewType, store.providerKaitenTimeLog),
+		store.viewCheckList
 	);
-	
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('kaiten.task.open', () => {
@@ -37,10 +37,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		}),
 		vscode.commands.registerCommand('kaiten.task.refresh', async () => {
 			await store.updateTaskData();
-		}),
-		vscode.commands.registerCommand('kaiten.time-log.refresh', async () => {
-			store.providerKaitenTimeLog.clearForm();
-			await store.updateTimeLogs();
 		}),
 	);
 
