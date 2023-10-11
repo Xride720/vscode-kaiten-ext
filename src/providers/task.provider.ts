@@ -1,8 +1,5 @@
 import * as vscode from 'vscode';
-import { API as BuiltInGitApi, GitExtension, Repository } from '../@types/git';
-import { convertKaitenDescription, generateKaitenLink, getNonce } from '../helpers/string';
-import { Event } from 'vscode';
-import { KaitenApiService } from '../api/kaiten';
+import { convertKaitenDescription, getNonce } from '../helpers/string';
 import { KaitenCardType } from '../api/kaiten.dto';
 
 export class KaitenTaskViewProvider implements vscode.WebviewViewProvider {
