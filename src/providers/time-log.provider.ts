@@ -44,6 +44,7 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		};
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+		this.updateTimeSummary();
 		const $this = this;
 		webviewView.webview.onDidReceiveMessage(data => {
 			switch (data.type) {
@@ -81,6 +82,14 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		if (this._view) {
 			const timeLogListHtml = this._generateTimeLogListHtml(data);
 			this._view.webview.postMessage({ type: 'updateTimeLogsData', data: timeLogListHtml });
+			this.updateTimeSummary();
+		}
+	}
+
+	private updateTimeSummary() {
+		if (this._view) {
+			const summSpent = this.store.timeLogs.reduce((acc, curr) => acc + curr.time_spent, 0);
+			this._view.description = formatTime(summSpent);
 		}
 	}
 
