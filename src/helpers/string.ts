@@ -37,6 +37,14 @@ export const formatDate = (date: string): string => {
   return `${day}.${month}.${year}`;
 };
 
+export const dateToString = (date: Date, withTime?: boolean) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+  const time = date.toTimeString().split(' ')[0];
+  return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}${withTime ? ' ' + time : ''}`;
+};
+
 /**
  * 
  * @param time - for example 320

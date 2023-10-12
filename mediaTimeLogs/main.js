@@ -30,6 +30,13 @@
   document.getElementById("cancel-btn")?.addEventListener("click", handleCancelEdit);
 
   document.getElementById("kaiten-time-logs-list")?.addEventListener("click", handleClickLogList);
+  document.querySelector(".commit-btn-cont")?.addEventListener("click", handleClickCommitCont);
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.commit-btn-cont')) {
+      document.querySelector('.commit-btn-cont .dropdown')?.classList.remove('open');
+    }
+  });
 
   // Handle messages sent from the extension to the webview
   window.addEventListener("message", (event) => {
@@ -45,6 +52,10 @@
       }
       case "updateRolesData": {
         updateRolesData(message.data);
+        break;
+      }
+      case "updateCommitsData": {
+        updateCommitsData(message.data);
         break;
       }
       case "setEditedTimeLog": {
@@ -87,6 +98,16 @@
     if (!contEl) return;
 
     contEl.innerHTML = roleOptionsHtml; 
+  }
+  /**
+   * 
+   * @param {string} commitListHtml 
+   */
+  function updateCommitsData(commitListHtml) {
+    const contEl = document.querySelector("#commit-list");
+    if (!contEl) return;
+
+    contEl.innerHTML = commitListHtml; 
   }
 
   function validateForm() {
@@ -155,6 +176,39 @@
         editedLogId: itemId
       });
     }
+  }
+
+  function handleClickCommitCont(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.target.closest('.commit-btn-cont .dropdown')) {
+      if (e.target.closest('.commit-btn-cont .commit-list__item')) {
+        const commitEl = e.target.closest('.commit-btn-cont .commit-list__item');
+        const textArea = document.querySelector('#log-form textarea[name="comment"]');
+        if (!textArea) return;
+        const message = commitEl.querySelector('.commit-message')?.innerHTML;
+        let text = '';
+        const start = textArea.selectionStart;
+        //ищем последнее положение выделенного символа
+        const end = textArea.selectionEnd;
+        if (message) text = `${start !== 0 ? "\n" : ''}${message}\n`;
+        // текст до + вставка + текст после (если этот код не работает, значит у вас несколько id)
+        const finText = textArea.value.substring(0, start) + text + textArea.value.substring(end);
+        // подмена значения
+        textArea.value = finText;
+        // возвращаем фокус на элемент
+        textArea.focus();
+        // возвращаем курсор на место - учитываем выделили ли текст или просто курсор поставили
+        textArea.selectionEnd = ( start == end )? (end + text.length) : end ;
+        textArea.dispatchEvent(new InputEvent('input',  { bubbles: true }));
+      }
+    } else {
+      const dropdown = document.querySelector('.commit-btn-cont .dropdown');
+      if (!dropdown) return;
+      if (dropdown.classList.contains('open')) dropdown.classList.remove('open');
+      else dropdown.classList.add('open');
+    }
+
   }
 
   function initForm() {

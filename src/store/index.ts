@@ -1,7 +1,7 @@
 import { KaitenApiService } from "../api/kaiten";
 import { KaitenTaskViewProvider } from "../providers/task.provider";
 import * as vscode from 'vscode';
-import { API as BuiltInGitApi, GitExtension, Repository } from '../@types/git';
+import { API as BuiltInGitApi, Commit, Repository } from '../@types/git';
 import { getBuiltInGitApi } from "../helpers/git";
 import { generateKaitenLink } from "../helpers/string";
 import { KaitenCardType, KaitenRoleType, KaitenTimeLogType } from "../api/kaiten.dto";
@@ -29,6 +29,10 @@ export class KaitenTaskStore {
 	private _timeLogs: KaitenTimeLogType[] = [];
 
   private _userRoles: KaitenRoleType[] = [];
+
+  private _commits: Commit[] = [];
+
+  private _repo: Repository | null = null;
 
 	public providerKaitenTask: KaitenTaskViewProvider;
 
@@ -68,9 +72,10 @@ export class KaitenTaskStore {
 
     const initBranch = (_repo: Repository) => {
       const callback = () => {
+        this._repo = _repo;
         if (_repo.state.HEAD?.name) {
           this.taskUrl = generateKaitenLink($this.baseUrl, _repo.state.HEAD.name) || '';
-          this.taskId = this.taskUrl.split('/').slice(-1)[0];
+          this.taskId = this.taskUrl.split('/').slice(-1)[0];          
         }
       };
       callback();
@@ -122,11 +127,20 @@ export class KaitenTaskStore {
 		}
   }
 
+  public async updateCommits() {
+    if (!this._repo) return;
+    this.commits = await this._repo.log({
+      sortByAuthorDate: true,
+      maxEntries: 10
+    });
+  }
+
   set taskId(id: string) {
     if (id !== this.taskId) {
       this._taskId = id;
       this.updateTaskData();
       this.updateTimeLogs();
+      this.updateCommits();
       this.providerKaitenTimeLog.clearForm();
     }
     this._taskId = id;
@@ -162,6 +176,15 @@ export class KaitenTaskStore {
 
   get userRoles() {
     return this._userRoles;
+  }
+
+  set commits(arr: Commit[]) {
+    this._commits = arr.slice();
+    this.providerKaitenTimeLog.updateCommitsData(this.commits);
+  }
+
+  get commits() {
+    return this._commits;
   }
 
   public async withProgress<T>(viewId: ViewType, promise: Promise<T>) {

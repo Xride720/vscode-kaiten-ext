@@ -2,7 +2,8 @@ export const Input = (
   name: string,
   label: string,
   inputHtml: string,
-  className?: string
+  className?: string,
+  customContent?: string,
 ) => `
 <div class="input-container ${className || ''}">
   ${inputHtml}
@@ -14,5 +15,6 @@ export const Input = (
     </legend>
   </fieldset>
   <label class="input-label" for="${name}">${label}</label>
+  ${customContent || ''}
 </div>
 `;

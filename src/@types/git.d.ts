@@ -42,6 +42,7 @@ export interface Commit {
 	readonly message: string;
 	readonly parents: string[];
 	readonly authorEmail?: string | undefined;
+	readonly commitDate: Date;
 }
 
 export interface Submodule {
@@ -117,6 +118,8 @@ export interface RepositoryUIState {
 export interface LogOptions {
 	/** Max number of log entries to retrieve. If not specified, the default is 32. */
 	readonly maxEntries?: number;
+	readonly sortByAuthorDate?: boolean;
+	readonly path?: string;
 }
 
 export interface Repository {

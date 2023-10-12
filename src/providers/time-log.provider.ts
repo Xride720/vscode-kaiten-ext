@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import { formatDate, formatTime, getNonce } from '../helpers/string';
+import { dateToString, formatDate, formatTime, getNonce } from '../helpers/string';
 import { KaitenRoleType, KaitenTimeLogType } from '../api/kaiten.dto';
 import { KaitenTaskStore } from '../store';
 import { Input } from '../helpers/html';
+import { Commit } from '../@types/git';
 
 export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 
@@ -97,6 +98,13 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		}
 	}
 
+	public updateCommitsData(data: Commit[]) {
+		if (this._view) {
+			const commitListHtml = this._generateCommitListHtml(data);
+			this._view.webview.postMessage({ type: 'updateCommitsData', data: commitListHtml });
+		}
+	}
+
 	private editTimeLog(logId: string) {
 		const timeLog = this.store.timeLogs.find(item => item.id === Number(logId));
 		if (!timeLog) return;
@@ -155,7 +163,17 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 			'comment',
 			'Комментарий',
 			'<textarea name="comment"></textarea>',
-			'cont-comment'
+			'cont-comment',
+			`
+			<div class="commit-btn-cont">
+				<i class="codicon codicon-git-commit"></i>
+				<div class="dropdown">
+					<ul class="commit-list" id="commit-list">
+						${this._generateCommitListHtml(this.store.commits)}
+					</ul>
+				</div>
+			</div>
+			`
 		);
 
 		return `<!DOCTYPE html>
@@ -234,6 +252,16 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 	private _generateRoleOptionsHtml(data: KaitenRoleType[]): string {
 		return data.map(item => `
 			<option label="${item.name}">${item.id}</option>
+		`).join("\n");
+	}
+
+	private _generateCommitListHtml(data: Commit[]): string {
+		return data.map(item => `
+			<li class="commit-list__item" data-hash="${item.hash}" title="Вставить в комментарий">
+				<span class="commit-message" title="${item.message}">${item.message}</span>
+				<span class="commit-date">${dateToString(item.commitDate, true)}</span>
+				<span class="commit-author">${item.authorEmail || ''}</span>
+			</li>
 		`).join("\n");
 	}
 
