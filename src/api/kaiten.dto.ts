@@ -204,3 +204,69 @@ export type UpdateTimeLogDataType = {
   comment?: string;
 };
 export type UpdateTimeLogResponseDataType = Omit<KaitenTimeLogType, 'role' | 'user' | 'author'>;
+
+export enum KaitenCommentTypeEnum {
+  markdown = 1,
+  html = 2
+}
+
+export enum KaitenAttacmentTypeEnum {
+  attachment = 1,
+  googleDrive = 2,
+  dropBox = 3,
+  box = 4,
+  oneDrive = 5,
+  'yandex disc' = 6,
+  'comment email' = 7,
+  commentAttachment = 8,
+}
+
+export type KaitenAttacmentsType = {
+  updated: string,
+  created: string,
+  card_cover: boolean,
+  author_id: number,
+  card_id: number,
+  comment_id: number,
+  deleted: boolean,
+  external: boolean,
+  id: number,
+  name: string,
+  size: number,
+  sort_order: number,
+  type: KaitenAttacmentTypeEnum,
+  url: string
+};
+
+export type KaitenCommentType = {
+  updated: string,
+  created: string,
+  id: number,
+  text: string,
+  type: KaitenCommentTypeEnum,
+  edited: boolean,
+  card_id: number,
+  author_id: number,
+  mail_addresses_to: string,
+  internal: boolean,
+  sd_external_recipients_cc: null |string,
+  notification_sent: null | string,
+  sent_slack_messages_data: null | {
+    channel: string,
+    ts: string
+  },
+  attacments: KaitenAttacmentsType[],
+  author: KaitenUserType
+};
+
+export type AddCommentDataType = Pick<KaitenCommentType, 'text'> & {
+  files: any[]
+};
+export type AddCommentResponseType = Omit<KaitenCommentType, 'author' | 'sent_slack_messages_data'>;
+
+export type UpdateCommentDataType = Pick<KaitenCommentType, 'text'> & {
+  files: any[]
+};
+export type UpdateCommentResponseType = Omit<KaitenCommentType, 'author' | 'sent_slack_messages_data'>;
+
+// Array.from($0.childNodes).reduce((acc, curr) => { const key = curr.childNodes[0].innerText; const value = curr.childNodes[1].innerText; acc[key]=value; return acc; }, {});

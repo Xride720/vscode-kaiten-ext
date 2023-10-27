@@ -11,12 +11,13 @@ export class TimeLogController {
     context: vscode.ExtensionContext,
 		store: KaitenTaskStore
   ) {
+    const $this = this;
     this.store = store;  
     context.subscriptions.push(
       vscode.commands.registerCommand('kaiten.time-log.refresh', async () => {
         store.providerKaitenTimeLog.clearForm();
         await Promise.allSettled([
-          store.updateTimeLogs(),
+          $this.updateTimeLogs(),
           store.updateCommits()
         ]);
       }),

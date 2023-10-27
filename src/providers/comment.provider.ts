@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
-import { dateToString, formatDate, formatTime, getNonce } from '../helpers/string';
-import { KaitenRoleType, KaitenTimeLogType } from '../api/kaiten.dto';
+import { angryMessage, dateToString, formatDate, getNonce } from '../helpers/string';
+import { KaitenCommentType } from '../api/kaiten.dto';
 import { KaitenTaskStore } from '../store';
 import { Input } from '../helpers/html';
 import { Commit } from '../@types/git';
+import markdown from '@wcj/markdown-to-html';
 
-export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
+export class KaitenCommentViewProvider implements vscode.WebviewViewProvider {
 
-	public static readonly viewType = 'kaiten.time-log';
+	public static readonly viewType = 'kaiten.comment';
 
 	private _view?: vscode.WebviewView;
 
@@ -42,28 +43,28 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		};
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-		this.updateTimeSummary();
+		this.updateCommentsCount();
 		const $this = this;
 		webviewView.webview.onDidReceiveMessage(data => {
 			switch (data.type) {
-				case 'addTimeLog':
+				case 'addComment':
 					{
-						$this.store.timeLogController.addTimeLog(data.payload);
+						$this.store.commentController.addComment(data.payload);
 						break;
 					}
-				case 'updateTimeLog':
+				case 'updateComment':
 					{
-						$this.store.timeLogController.updateTimeLog(data.payload);
+						$this.store.commentController.updateComment(data.payload);
 						break;
 					}
-				case 'removeTimeLog':
+				case 'removeComment':
 					{
-						$this.store.timeLogController.removeTimeLog(data.payload);
+						$this.checkAuthorComment(data.payload, () => $this.store.commentController.removeComment(data.payload));
 						break;
 					}
-				case 'editTimeLog':
+				case 'editComment':
 					{
-						$this.editTimeLog(data.payload);
+						$this.checkAuthorComment(data.payload, () => $this.editComment(data.payload));
 						break;
 					}
 				default:
@@ -76,25 +77,18 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
-	public updateTimeLogsData(data: KaitenTimeLogType[]) {
+	public updateCommentsData(data: KaitenCommentType[]) {
 		if (this._view) {
-			const timeLogListHtml = this._generateTimeLogListHtml(data);
-			this._view.webview.postMessage({ type: 'updateTimeLogsData', data: timeLogListHtml });
-			this.updateTimeSummary();
+			const commentListHtml = this._generateCommentListHtml(data);
+			this._view.webview.postMessage({ type: 'updateCommentsData', data: commentListHtml });
+			this.updateCommentsCount();
 		}
 	}
 
-	private updateTimeSummary() {
+	private updateCommentsCount() {
 		if (this._view) {
-			const summSpent = this.store.timeLogs.reduce((acc, curr) => acc + curr.time_spent, 0);
-			this._view.description = formatTime(summSpent);
-		}
-	}
-
-	public updateRolesData(data: KaitenRoleType[]) {
-		if (this._view) {
-			const rolesOptionsHtml = this._generateRoleOptionsHtml(data);
-			this._view.webview.postMessage({ type: 'updateRolesData', data: rolesOptionsHtml });
+			const count = this.store.comments.length;
+			this._view.description = String(count);
 		}
 	}
 
@@ -105,11 +99,24 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 		}
 	}
 
-	private editTimeLog(logId: string) {
-		const timeLog = this.store.timeLogs.find(item => item.id === Number(logId));
-		if (!timeLog) return;
+	private checkAuthorComment(commentId: string, callback: () => void) {
+		const comment = this.store.comments.find(item => item.id === Number(commentId));
+		if (!comment) return;
+		if (comment.author_id === this.store.currentUser?.id) {
+			callback();
+		} else {
+			const { author } = comment;
+			
+			author && vscode.window.showErrorMessage(`${angryMessage()} © ${author.username}`);
+		}
+		
+	}
+
+	private editComment(commentId: string) {
+		const comment = this.store.comments.find(item => item.id === Number(commentId));
+		if (!comment) return;
 		if (this._view) {
-			this._view.webview.postMessage({ type: 'setEditedTimeLog', data: timeLog });
+			this._view.webview.postMessage({ type: 'setEditedComment', data: comment });
 		}
 	}
 
@@ -121,47 +128,20 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'timeLogs', 'main.js'));
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'comments', 'main.js'));
 
 		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'shared', 'reset.css'));
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'shared', 'vscode.css'));
-		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'timeLogs', 'main.css'));
+		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'comments', 'main.css'));
 		const styleInputUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'shared', 'input.css'));
 		const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'assets', 'codicon.css'));
 
 		const nonce = getNonce();
 
-		const forDate = Input(
-			'for_date',
-			'Дата',
-			'<input type="date" name="for_date" placeholder="Выберите дату" />'
-		);
-
-		const timeSpent = Input(
-			'time_spent',
-			'Затрачено времени',
-			'<input type="number" name="time_spent" placeholder="в минутах" />'
-		);
-
-		const roleSelect = Input(
-			'role_id',
-			'Роль',
-			`
-				<select
-					name="role_id"
-					id="role_select"
-					class="monaco-select-box monaco-select-box-dropdown-padding setting-control-focus-target"
-				>	
-					${this._generateRoleOptionsHtml(this.store.userRoles)}
-				</select>
-			`,
-			'select-container'
-		);
-		
 		const comment = Input(
-			'comment',
+			'text',
 			'Комментарий',
-			'<textarea name="comment"></textarea>',
+			'<textarea name="text"></textarea>',
 			'cont-comment',
 			`
 			<div class="commit-btn-cont">
@@ -197,12 +177,7 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 				<title>KAiten task</title>
 			</head>
 			<body>
-				<form id="log-form">
-					<div class="top-fields">
-						${roleSelect}
-						${timeSpent}
-						${forDate}
-					</div>
+				<form id="comment-form">
 					${comment}
 					<div class="form-buttons">
 						<button id="create-btn" >Создать</button>
@@ -210,33 +185,26 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 						<button id="save-btn" class="kaiten-hidden" >Сохранить</button>
 					</div>
 				</form>
-				<ul id="kaiten-time-logs-list">${this.store.timeLogs.length ? this._generateTimeLogListHtml(this.store.timeLogs) : ''}</ul>
+				<ul id="kaiten-comments-list">${this.store.comments.length ? this._generateCommentListHtml(this.store.comments) : ''}</ul>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
 	}
 
-	private _generateTimeLogListHtml(data: KaitenTimeLogType[]): string {
-		return [...data].sort((a, b) => new Date(a.for_date) > new Date(b.for_date) ? -1 : 1).map(item => `
-			<li class="time-log__item" data-id="${item.id}">
-				<div class="top-block">
-					<span class="time-log__item-for_date" title="Дата: ${formatDate(item.for_date)}">${formatDate(item.for_date)}</span>
-					<span class="time-log__item-role_name" title="Роль: ${item.role.name}">${item.role.name}</span>
-					<span
-						class="time-log__item-time_spent"
-						title="Затрачено времени: ${formatTime(item.time_spent)}"
-					>
-						${formatTime(item.time_spent)}
-					</span>
+	private _generateCommentListHtml(data: KaitenCommentType[]): string {
+		return data.map(item => `
+			<li class="comment__item" data-id="${item.id}">
+				<div class="top-block" title="${item.author.full_name} ${formatDate(item.updated)}">
+					${markdown(item.text)}
 				</div>
 				<div class="bottom-block">
 					<span
-						class="time-log__item-full_name"
+						class="comment__item-full_name"
 						title="${item.author.full_name}"
 					>
 						${item.author.full_name}
 					</span>
-					<span class="time-log__item-comment" title="${item.comment}">${item.comment}</span>
+					<span class="comment__item-date" title="Дата: ${formatDate(item.updated)}">${formatDate(item.updated)}</span>
 				</div>
 				<div class="delete-btn btn">
 					<i class="codicon codicon-close"></i>
@@ -245,12 +213,6 @@ export class KaitenTimeLogViewProvider implements vscode.WebviewViewProvider {
 					<i class="codicon codicon-edit"></i>
 				</div>
 			</li>
-		`).join("\n");
-	}
-
-	private _generateRoleOptionsHtml(data: KaitenRoleType[]): string {
-		return data.map(item => `
-			<option label="${item.name}">${item.id}</option>
 		`).join("\n");
 	}
 

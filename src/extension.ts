@@ -5,6 +5,7 @@ import { KaitenTaskViewProvider } from './providers/task.provider';
 import { formatUrl } from './helpers/string';
 import { KaitenTaskStore } from './store';
 import { KaitenTimeLogViewProvider } from './providers/time-log.provider';
+import { KaitenCommentViewProvider } from './providers/comment.provider';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -28,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(KaitenTaskViewProvider.viewType, store.providerKaitenTask),
 		vscode.window.registerWebviewViewProvider(KaitenTimeLogViewProvider.viewType, store.providerKaitenTimeLog),
+		vscode.window.registerWebviewViewProvider(KaitenCommentViewProvider.viewType, store.providerKaitenComment),
 		store.viewCheckList
 	);
 

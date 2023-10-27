@@ -48,12 +48,14 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        response.data && this.store.taskData.checklists.push(response.data);
+        if (response.data) {
+          if (!this.store.taskData.checklists) this.store.taskData.checklists = [response.data];
+          else this.store.taskData.checklists.push(response.data);
+        }
         this.store.providerKaitenCheckList.refresh();
       }
-      
     } else {
-      vscode.window.showErrorMessage(response.errorMessage || 'Ошибка обновления чек-листа');
+      vscode.window.showErrorMessage(response.errorMessage || 'Ошибка создания чек-листа');
     }
   }
 

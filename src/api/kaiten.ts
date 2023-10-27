@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { AddKaitenChecklistType, AddTimeLogDataType, AddTimeLogResponseDataType, KaitenCardType, KaitenChecklistItemType, KaitenChecklistType, KaitenRoleType, KaitenTimeLogType, UpdateChecklistItemType, UpdateKaitenChecklistType, UpdateTimeLogDataType, UpdateTimeLogResponseDataType } from "./kaiten.dto";
+import { AddCommentDataType, AddCommentResponseType, AddKaitenChecklistType, AddTimeLogDataType, AddTimeLogResponseDataType, KaitenCardType, KaitenChecklistItemType, KaitenChecklistType, KaitenCommentType, KaitenRoleType, KaitenTimeLogType, KaitenUserType, UpdateChecklistItemType, UpdateCommentDataType, UpdateCommentResponseType, UpdateKaitenChecklistType, UpdateTimeLogDataType, UpdateTimeLogResponseDataType } from "./kaiten.dto";
 
 const SUCCESS_STATUSES = [200, 201];
 
@@ -36,6 +36,24 @@ export class KaitenApiService {
     try {
       const result = await this.request<KaitenRoleType[]>(
         this.baseUrl + '/api/latest/user-roles',
+        this.kaitenOptions({
+          method: 'GET'
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+
+  async getCurrentUser() {
+    try {
+      const result = await this.request<KaitenUserType>(
+        this.baseUrl + '/api/latest/users/current',
         this.kaitenOptions({
           method: 'GET'
         })
@@ -107,6 +125,77 @@ export class KaitenApiService {
     try {
       const result = await this.request<{ id: number }>(
         this.baseUrl + '/api/latest/cards/' + taskId + '/time-logs/' + logId,
+        this.kaitenOptions({
+          method: 'DELETE'
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+
+  async getComments(taskId: string) {
+    try {
+      const result = await this.request<KaitenCommentType[]>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/comments',
+        this.kaitenOptions({
+          method: 'GET'
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async addComment(taskId: string, payload: AddCommentDataType) {
+    try {
+      const result = await this.request<AddCommentResponseType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/comments',
+        this.kaitenOptions({
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async updateComment(taskId: string, commentId: string, payload: UpdateCommentDataType) {
+    try {
+      const result = await this.request<UpdateCommentResponseType>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/comments/' + commentId,
+        this.kaitenOptions({
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        })
+      );
+
+      return { error: false, data: result };
+    } catch (error) {
+      return {
+        error: true,
+        errorMessage: error as string
+      };
+    }
+  }
+  async removeComment(taskId: string, commentId: string) {
+    try {
+      const result = await this.request<{ id: number }>(
+        this.baseUrl + '/api/latest/cards/' + taskId + '/comments/' + commentId,
         this.kaitenOptions({
           method: 'DELETE'
         })

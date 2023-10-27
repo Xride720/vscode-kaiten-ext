@@ -55,3 +55,13 @@ export const formatTime = (time: number): string => {
   const hours = Math.floor(time / 60);
   return `${hours ? hours + 'ч. ' : ''} ${minutes ? minutes + 'мин.' : ''}`;
 };
+
+const angryArr = [
+  'Руки прочь! 😡',
+  'Свой напиши и делай что хочешь! 👹',
+  'Заняться больше нечем? 👾',
+  'Тебе лишь бы поломать все... 🐷',
+  'Что ж ты творишь? 👽',
+  'И не стыдно тебе? 🙀',
+];
+export const angryMessage = () => angryArr[Math.floor(Math.random() * angryArr.length)];

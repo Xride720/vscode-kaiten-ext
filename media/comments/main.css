@@ -1,0 +1,258 @@
+body {
+	background-color: transparent;
+}
+
+.kaiten-hidden {
+	display: none;
+}
+
+#comment-form {
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+#comment-form .cont-comment {
+	width: 100%;
+	margin-bottom: 7px;
+}
+
+#comment-form textarea[name="text"] {
+	resize: vertical;
+	width: 100%;
+	min-height: 100px;
+}
+
+#comment-form .top-fields {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin-bottom: 7px;
+}
+#comment-form .top-fields > * {
+	flex: 1;
+	min-width: 100px;
+}
+
+#comment-form select {
+	width: 100%;
+	text-overflow: ellipsis;
+	padding-right: 10px;
+	border-radius: 6px;
+}
+
+#comment-form .select-container:after {
+	content: "";
+	font-family: codicon;
+	font-size: 16px;
+	width: 8px;
+	height: 8px;
+	line-height: 16px;
+	position: absolute;
+	top: -2px;
+	bottom: 0;
+	right: 6px;
+	margin: auto;
+	pointer-events: none;
+	border: 1px solid;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+#comment-form .form-buttons {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+#comment-form .form-buttons > * {
+	flex: 1;
+	border-radius: 6px;
+}
+#comment-form .form-buttons > *:disabled {
+	background: var(--vscode-button-secondaryBackground);
+	cursor: not-allowed;
+}
+
+#kaiten-comments-list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	list-style: none;
+	padding: 0;
+}
+
+#kaiten-comments-list .comment__item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 5px;
+	border: 1px solid var(--vscode-actionBar-toggledBackground);
+	padding: 5px;
+	background: var(--vscode-merge-commonContentBackground);
+	border-radius: 5px;
+
+}
+
+#kaiten-comments-list .comment__item .top-block {
+	width: 100%;
+	overflow-x: auto;
+}
+
+#kaiten-comments-list .comment__item .bottom-block {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	width: 100%;
+	justify-content: space-between;
+}
+
+
+#kaiten-comments-list .comment__item .bottom-block > *  {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	opacity: .7;
+	font-size: 12px;
+	width: fit-content;
+}
+
+#kaiten-comments-list .comment__item-full_name {
+	width: calc(50% - 3px);
+}
+#kaiten-comments-list .comment__item-date {
+	width: calc(50% - 3px);
+	text-align: start;
+}
+
+
+#kaiten-comments-list .comment__item .btn {
+	padding: 0;
+	position: absolute;
+	top: calc(50% - 9px);
+	background: transparent;
+	width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity .3s ease, background-color .3s ease;
+	border-radius: 4px;
+}
+
+#kaiten-comments-list .comment__item:hover .btn {
+	opacity: 1;
+}
+
+#kaiten-comments-list .comment__item:hover .btn.delete-btn:hover {
+	background: var(--vscode-editorError-foreground);
+}
+#kaiten-comments-list .comment__item:hover .btn.edit-btn:hover {
+	background: var(--vscode-button-hoverBackground);
+}
+
+#kaiten-comments-list .comment__item .btn.delete-btn {
+	right: -7px;
+}
+
+#kaiten-comments-list .comment__item .btn.edit-btn {
+	left: -7px;
+}
+#kaiten-comments-list .comment__item .btn.edit-btn > i {
+	transform: scale(.85);
+}
+
+
+@media only screen and (max-width: 350px) {
+	#kaiten-comments-list .comment__item .bottom-block {
+		display: none;
+	}
+	#kaiten-comments-list .comment__item .btn {
+		top: 9px;
+	}
+	#kaiten-comments-list .comment__item .btn.delete-btn {
+		right: -20px;
+	}
+	#kaiten-comments-list .comment__item .btn.edit-btn {
+		left: -20px;
+	}
+}
+
+
+.commit-btn-cont {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 4px;
+	cursor: pointer;
+	background: transparent;
+	border-radius: 5px;
+	display: flex;
+	align-items: center;
+	transition: background-color .3s ease;
+}
+.commit-btn-cont > i {
+	transform: scale(.85);
+}
+.commit-btn-cont:hover {
+	background: var(--vscode-inputOption-activeBackground);
+}
+
+.commit-btn-cont .dropdown {
+	position: absolute;
+	z-index: 10;
+	width: calc(100vw * 0.7);
+	height: 200px;
+	position: absolute;
+	top: 27px;
+	right: 5px;
+	overflow: hidden;
+	overflow-y: auto;
+	border: 1px solid var(--vscode-focusBorder);
+	background: var(--vscode-editorHoverWidget-background);
+	display: none;
+}
+
+.commit-btn-cont .dropdown.open {
+	display: block;
+}
+
+.commit-btn-cont .dropdown .commit-list {
+	list-style: none;
+	padding: 0;
+}
+.commit-btn-cont .dropdown .commit-list__item {
+	padding: 5px 7px;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+	transition: background-color .3s ease;
+	box-shadow: inset 0px -1px 0px 0px var(--vscode-merge-commonContentBackground);
+}
+
+.commit-btn-cont .dropdown .commit-list__item > * {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.commit-btn-cont .commit-message {
+	width: 100%;
+}
+.commit-btn-cont .commit-date {
+	width: 115px;
+}
+.commit-btn-cont .commit-author {
+	width: calc(100% - 122px);
+	text-align: end;
+}
+
+.commit-btn-cont .dropdown .commit-list__item:hover {
+	background: var(--vscode-merge-commonContentBackground);
+}
+.commit-btn-cont .dropdown .commit-list__item.selected {
+	background: var(--vscode-merge-commonContentBackground);
+}

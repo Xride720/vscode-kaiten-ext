@@ -57,12 +57,12 @@ export class KaitenTaskViewProvider implements vscode.WebviewViewProvider {
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'mediaTask', 'main.js'));
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'task', 'main.js'));
 
 		// Do the same for the stylesheet.
-		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'mediaTask', 'reset.css'));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'mediaTask', 'vscode.css'));
-		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'mediaTask', 'main.css'));
+		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'shared', 'reset.css'));
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'shared', 'vscode.css'));
+		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'task', 'main.css'));
 
 		// Use a nonce to only allow a specific script to be run.
 		const nonce = getNonce();

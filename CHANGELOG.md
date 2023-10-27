@@ -14,3 +14,8 @@ All notable changes to the "kaiten-ext" extension will be documented in this fil
 
 - Summary time in time-logs.
 - Functionality for inserting one or more of the last 10 commits into a timelog comment.
+
+## [0.0.7]
+
+- Add task comments view.
+- Fix bugs
