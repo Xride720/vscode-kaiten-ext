@@ -11,6 +11,8 @@ import { TimeLogController } from "../controllers/time-log.controller";
 import { CheckListController } from "../controllers/checklist.controller";
 import { KaitenCommentViewProvider } from "../providers/comment.provider";
 import { KaitenCommentController } from "../controllers/comment.controller";
+import { ActionCodeProvider } from "../providers/code-action.provider";
+import { ActionCodeController } from "../controllers/action-code.controller";
 
 type ViewType = typeof KaitenTaskViewProvider['viewType']
   | typeof KaitenTimeLogViewProvider['viewType']
@@ -41,6 +43,10 @@ export class KaitenTaskStore {
 
   private _repo: Repository | null = null;
 
+	public providerActionCode: ActionCodeProvider;
+
+  public actionCodeController: ActionCodeController;
+
 	public providerKaitenTask: KaitenTaskViewProvider;
 
 	public providerKaitenTimeLog: KaitenTimeLogViewProvider;
@@ -66,6 +72,7 @@ export class KaitenTaskStore {
   ) {
     this.baseUrl = baseUrl;
     this.kaitenApi = new KaitenApiService(baseUrl, apiKey);
+    this.providerActionCode = new ActionCodeProvider(this);
     this.providerKaitenTask = new KaitenTaskViewProvider(context.extensionUri);
     this.providerKaitenTimeLog = new KaitenTimeLogViewProvider(context.extensionUri, this);
     this.providerKaitenComment = new KaitenCommentViewProvider(context.extensionUri, this);
@@ -75,6 +82,7 @@ export class KaitenTaskStore {
     this.timeLogController = new TimeLogController(context, this);
     this.commentController = new KaitenCommentController(context, this);
     this.checkListController = new CheckListController(context, this);
+    this.actionCodeController = new ActionCodeController(context, this);
   }
 
   async init() {

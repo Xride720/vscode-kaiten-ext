@@ -110,6 +110,20 @@ export class CheckListItem extends vscode.TreeItem {
     this.checkboxState = {
       state: data.checked ? vscode.TreeItemCheckboxState.Checked : vscode.TreeItemCheckboxState.Unchecked
     };
+		const regexResult = /\n\(##\s([\W\w]+)\s##\)$/g.exec(data.text);
+    if (regexResult === null) return;
+    const [link, lineNumber] = regexResult[1]?.split(' : ') || [];
+    const basePath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : '';
+    const path = vscode.Uri.file(`${basePath}${link}`);
+
+		this.command = {
+			title: 'Перейти по ссылке (## [relativePath] ##)',
+			command: 'kaiten.checklist.revealInFile',
+			arguments: [
+				path,
+				lineNumber
+			]
+		};
 	}
 
 	contextValue = 'kaiten.checklist.checklistItem';

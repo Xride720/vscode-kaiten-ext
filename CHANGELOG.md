@@ -19,3 +19,8 @@ All notable changes to the "kaiten-ext" extension will be documented in this fil
 
 - Add task comments view.
 - Fix bugs
+
+## [0.0.9]
+
+- Added functionality for creating checklist items from code comments like 'TODO' | 'FIXME' | 'HACK' | 'BUG'
+- Added functionality reveal in file from checklist item

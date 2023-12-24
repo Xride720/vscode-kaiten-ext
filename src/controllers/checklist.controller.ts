@@ -1,4 +1,4 @@
-import { UpdateChecklistItemType } from "../api/kaiten.dto";
+import { KaitenChecklistItemType, KaitenChecklistType, UpdateChecklistItemType } from "../api/kaiten.dto";
 import { CheckList, CheckListItem, KaitenCheckListProvider } from "../providers/checklist.provider";
 import { KaitenTaskStore } from "../store";
 import * as vscode from 'vscode';
@@ -23,7 +23,10 @@ export class CheckListController {
         await this.deleteCheckList(list);
       }),
       vscode.commands.registerCommand('kaiten.checklist.add-item', async (list: CheckList) => {
-        await this.addCheckListItem(list);
+        await this.addCheckListItem(list.data);
+      }),
+      vscode.commands.registerCommand('kaiten.checklist.revealInFile', (path: vscode.Uri, lineNumber: number) => {
+        this.openFileByLinkInText(path, lineNumber);
       }),
       vscode.commands.registerCommand('kaiten.checklist.edit-item', async (item: CheckListItem) => {
         await this.editCheckListItem(item);
@@ -34,16 +37,20 @@ export class CheckListController {
     );
 	}
 
-  public async addCheckList() {
-    const input = await vscode.window.showInputBox({
-      title: `Новый чек-лист`,
-      placeHolder: 'Введите название нового чек-листа'
-    });
-    if (!input) return;
+  public async addCheckList(name?: string): Promise<KaitenChecklistType | null> {
+    let checklistName: string | undefined;
+    if (!name) {
+      checklistName = await vscode.window.showInputBox({
+        title: `Новый чек-лист`,
+        placeHolder: 'Введите название нового чек-листа'
+      });
+      if (!checklistName) return null;
+    } else checklistName = name;
+    
 
     const response = await this.store.withProgress(
       KaitenCheckListProvider.viewType,
-      this.store.kaitenApi.addCheckList(this.store.taskId, { name: input })
+      this.store.kaitenApi.addCheckList(this.store.taskId, { name: checklistName })
     );
 
     if (!response.error) {
@@ -53,10 +60,12 @@ export class CheckListController {
           else this.store.taskData.checklists.push(response.data);
         }
         this.store.providerKaitenCheckList.refresh();
+        return response.data || null;
       }
     } else {
       vscode.window.showErrorMessage(response.errorMessage || 'Ошибка создания чек-листа');
     }
+    return null;
   }
 
   public async editCheckList(list: CheckList) {
@@ -113,17 +122,20 @@ export class CheckListController {
 
 
 
-  public async addCheckListItem(checklist: CheckList) {
-    const checklistId = checklist.data.id;
-    const input = await vscode.window.showInputBox({
-      title: `Новый пункт чек-листа "${checklist.data.name}"`,
-      placeHolder: 'Введите текст нового пункта'
-    });
-    if (!input) return;
+  public async addCheckListItem(checklist: KaitenChecklistType, text?: string) {
+    const checklistId = checklist.id;
+    let itemText: string | undefined = text;
+    if (!itemText) {
+      itemText = await vscode.window.showInputBox({
+        title: `Новый пункт чек-листа "${checklist.name}"`,
+        placeHolder: 'Введите текст нового пункта'
+      });
+      if (!itemText) return;
+    }
 
     const response = await this.store.withProgress(
       KaitenCheckListProvider.viewType,
-      this.store.kaitenApi.addCheckListItem(this.store.taskId, checklistId, { text: input })
+      this.store.kaitenApi.addCheckListItem(this.store.taskId, checklistId, { text: itemText })
     );
 
     if (!response.error) {
@@ -197,4 +209,16 @@ export class CheckListController {
     }
   }
 
+  public openFileByLinkInText(path: vscode.Uri, lineNumber: number) {
+    vscode.commands.executeCommand(
+      'vscode.open',
+      path,
+      {
+        selection: new vscode.Selection(
+          new vscode.Position(Number(lineNumber), 0),
+          new vscode.Position(Number(lineNumber), 0)
+        )
+      }
+    );
+  }
 }

@@ -2,7 +2,7 @@
   "name": "kaiten-ext",
   "displayName": "Kaiten",
   "description": "Kaiten in VSCode",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/Xride720/vscode-kaiten-ext"
@@ -16,7 +16,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
@@ -84,6 +86,12 @@
         "icon": "$(terminal-new)"
       },
       {
+        "command": "kaiten.checklist.revealInFile",
+        "category": "Kaiten",
+        "title": "Перейти по ссылке (## [relativePath] ##)",
+        "icon": "$(file-code)"
+      },
+      {
         "command": "kaiten.checklist.edit-item",
         "category": "Kaiten",
         "title": "Редактировать пункт чек-листа",
@@ -91,6 +99,18 @@
       },
       {
         "command": "kaiten.checklist.delete-item",
+        "category": "Kaiten",
+        "title": "Удалить пункт чек-листа",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "kaiten.checklist.code-action.add",
+        "category": "Kaiten",
+        "title": "Удалить пункт чек-листа",
+        "icon": "$(panel-close)"
+      },
+      {
+        "command": "kaiten.checklist.code-action.add-default",
         "category": "Kaiten",
         "title": "Удалить пункт чек-листа",
         "icon": "$(panel-close)"
@@ -158,6 +178,11 @@
       ],
       "view/item/context": [
         {
+          "command": "kaiten.checklist.add-item",
+          "group": "inline@1",
+          "when": "viewItem == kaiten.checklist.checklist"
+        },
+        {
           "command": "kaiten.checklist.edit",
           "group": "inline@2",
           "when": "viewItem == kaiten.checklist.checklist"
@@ -165,11 +190,6 @@
         {
           "command": "kaiten.checklist.delete",
           "group": "inline@3",
-          "when": "viewItem == kaiten.checklist.checklist"
-        },
-        {
-          "command": "kaiten.checklist.add-item",
-          "group": "inline@1",
           "when": "viewItem == kaiten.checklist.checklist"
         },
         {
