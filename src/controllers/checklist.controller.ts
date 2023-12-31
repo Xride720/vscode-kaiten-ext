@@ -84,7 +84,7 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        this.store.taskData.checklists = this.store.taskData.checklists.map(listItem => listItem.id === list.data.id ? {
+        this.store.taskData.checklists = this.store.taskData.checklists?.map(listItem => listItem.id === list.data.id ? {
           ...listItem,
           name: input
         } : listItem);
@@ -112,7 +112,7 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        this.store.taskData.checklists = this.store.taskData.checklists.filter(list => list.id !== id);
+        this.store.taskData.checklists = this.store.taskData.checklists?.filter(list => list.id !== id);
         this.store.providerKaitenCheckList.refresh();
       }
     } else {
@@ -140,7 +140,7 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        this.store.taskData.checklists = this.store.taskData.checklists.map(list => list.id === checklistId ? {
+        this.store.taskData.checklists = this.store.taskData.checklists?.map(list => list.id === checklistId ? {
           ...list,
           items: response.data ? [...(list.items || []), response.data] : list.items
         } : list);
@@ -169,7 +169,7 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        this.store.taskData.checklists = this.store.taskData.checklists.map(list => list.id === checklistId ? {
+        this.store.taskData.checklists = this.store.taskData.checklists?.map(list => list.id === checklistId ? {
           ...list,
           items: list.items?.map(item => item.id === id && response.data ? response.data : item)
         } : list);
@@ -198,7 +198,7 @@ export class CheckListController {
 
     if (!response.error) {
       if (this.store.taskData) {
-        this.store.taskData.checklists = this.store.taskData.checklists.map(list => list.id === checklistId ? {
+        this.store.taskData.checklists = this.store.taskData.checklists?.map(list => list.id === checklistId ? {
           ...list,
           items: list.items?.filter(item => item.id !== id)
         } : list);

@@ -31,7 +31,7 @@ export class ActionCodeController {
   }
 
   public async addItemToDefaultCheckList(text: string) {
-    let defaultChecklist: KaitenChecklistType | null = this.store.taskData?.checklists.find(checklist => checklist.name === DefaultCheckListName) || null;
+    let defaultChecklist: KaitenChecklistType | null = this.store.taskData?.checklists?.find(checklist => checklist.name === DefaultCheckListName) || null;
     if (!defaultChecklist) {
       defaultChecklist = await this.store.checkListController.addCheckList(DefaultCheckListName);
       if (!defaultChecklist) return;
@@ -41,7 +41,7 @@ export class ActionCodeController {
   }
 
   public async addItemToCheckList(text: string) {
-    const checkListNameArr = this.store.taskData?.checklists.map((list) => `(id:${list.id}) ${list.name}`) || [];
+    const checkListNameArr = this.store.taskData?.checklists?.map((list) => `(id:${list.id}) ${list.name}`) || [];
     const select = await vscode.window.showQuickPick(['Новый чеклист', ...checkListNameArr], {
       canPickMany: false,
       title: `Выберите нужный вариант`
@@ -50,7 +50,7 @@ export class ActionCodeController {
     if (select === 'Новый чеклист') {
       checklist = await this.store.checkListController.addCheckList();
     } else {
-      checklist = this.store.taskData?.checklists.find(list => `(id:${list.id}) ${list.name}` === select);
+      checklist = this.store.taskData?.checklists?.find(list => `(id:${list.id}) ${list.name}` === select);
     }
     if (!checklist) return;
 

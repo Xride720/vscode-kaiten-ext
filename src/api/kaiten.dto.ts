@@ -113,7 +113,7 @@ export type KaitenCardType = {
   external_user_emails: null | string,
   description_filled: boolean,
   estimate_workload: number,
-  checklists: KaitenChecklistType[],
+  checklists?: KaitenChecklistType[],
   owner: object; // есть в доках можно дополнить при необходимости
   type: object; // есть в доках можно дополнить при необходимости
   board: object; // есть в доках можно дополнить при необходимости

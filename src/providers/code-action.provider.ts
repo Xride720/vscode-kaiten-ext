@@ -32,19 +32,21 @@ export class ActionCodeProvider implements vscode.CodeActionProvider {
     }
     const [_, typeText, resultText] = regexResult;
 
+    const anyChecklistExistInTask = !!this.store.taskData?.checklists?.length;
+
     return [
       {
-        title: 'Добавить в чеклист "Заметки VSCode"',
-        tooltip: 'Kaiten',
+        title: '[KAITEN]: Добавить в чеклист "Заметки VSCode"',
         command: 'kaiten.checklist.code-action.add-default',
         arguments: [typeText, resultText, `${relativePath} : ${lineNumber}`]
       },
-      {
-        title: 'Выбрать чеклист',
-        tooltip: 'Kaiten',
-        command: 'kaiten.checklist.code-action.add',
-        arguments: [typeText, resultText, `${relativePath} : ${lineNumber}`]
-      },
+      ...(anyChecklistExistInTask ? [
+        {
+          title: '[KAITEN]: Выбрать чеклист',
+          command: 'kaiten.checklist.code-action.add',
+          arguments: [typeText, resultText, `${relativePath} : ${lineNumber}`]
+        }
+      ] : [])
     ];
   }
 

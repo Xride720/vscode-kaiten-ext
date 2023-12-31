@@ -55,7 +55,8 @@ export class KaitenCheckListProvider implements vscode.TreeDataProvider<CheckLis
 			if (this.store.taskData?.checklists?.length) {
 				return Promise.resolve(this.getNodeList());
 			} else {
-				this.store.taskData?.checklists?.length === 0 && vscode.window.showInformationMessage('В задаче нет чек-листов!');
+				if (this.store.taskData && !this.store.taskData?.checklists?.length)
+					vscode.window.showInformationMessage('В задаче нет чек-листов!');
 				return Promise.resolve([]);
 			}
 		}
