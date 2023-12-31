@@ -2,7 +2,7 @@
   "name": "kaiten-ext",
   "displayName": "Kaiten",
   "description": "Kaiten in VSCode",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "repository": {
     "type": "git",
     "url": "https://github.com/Xride720/vscode-kaiten-ext"

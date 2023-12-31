@@ -85,25 +85,34 @@ export class KaitenTaskStore {
     this.actionCodeController = new ActionCodeController(context, this);
   }
 
-  async init() {
-    const $this = this;
+  async init(withSubscribe = true) {
     [this.gitExt] = await Promise.all([getBuiltInGitApi(), this.initRoles(), this.initCurrentUser()]);
     
     if (!this.gitExt) return;
 
-    const initBranch = (_repo: Repository) => {
+    const initBranch = (_repo?: Repository) => {
       const callback = () => {
-        this._repo = _repo;
-        if (_repo.state.HEAD?.name) {
-          this.taskUrl = generateKaitenLink($this.baseUrl, _repo.state.HEAD.name) || '';
-          this.taskId = this.taskUrl.split('/').slice(-1)[0];          
+        if (_repo) this._repo = _repo;
+        if (!this._repo) return;
+        if (this._repo.state.HEAD?.name) {
+          this.taskUrl = generateKaitenLink(this.baseUrl, this._repo.state.HEAD.name) || '';
+          this.taskId = this.taskUrl.split('/').slice(-1)[0];
+          console.log(this.taskId);    
         }
       };
       callback();
       return callback;
     };
 
-    if (this.gitExt.state === 'initialized' && this.gitExt.repositories[0]) {
+    const initialized = this.gitExt.state === 'initialized' && this.gitExt.repositories[0];
+
+    if (!withSubscribe) {
+      const repo = initialized ? this.gitExt.repositories[0] : undefined;
+      initBranch(repo);
+      return;
+    }
+
+    if (initialized) {
       const repo = this.gitExt.repositories[0];
       repo.state.onDidChange(initBranch(repo));
     } else {
@@ -138,6 +147,7 @@ export class KaitenTaskStore {
   }
 
   public async updateTaskData() {
+    await this.init(false);
     const response = await this.withProgress(
       KaitenTaskViewProvider.viewType,
       this.kaitenApi.getTask(this.taskId)
